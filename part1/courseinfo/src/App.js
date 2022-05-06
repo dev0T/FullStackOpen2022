@@ -26,33 +26,39 @@ const App = () => {
   );
 };
 
-const Header = (props) => {
-  return <h1>{props.course}</h1>;
+const Header = ({ course }) => {
+  return <h1>{course}</h1>;
 };
 
-const Content = (props) => {
+const Content = ({ parts }) => {
   return (
     <div>
-      {props.parts.map((partObj) => {
-        return <Part part={partObj.name} exercises={partObj.exercises} />;
+      {parts.map((partObj) => {
+        return (
+          <Part
+            key={partObj.name}
+            part={partObj.name}
+            exercises={partObj.exercises}
+          />
+        );
       })}
     </div>
   );
 };
 
-const Part = (props) => {
+const Part = ({ part, exercises }) => {
   return (
     <p>
-      {props.part} {props.exercises}
+      {part} {exercises}
     </p>
   );
 };
 
-const Total = (props) => {
+const Total = ({ parts }) => {
   return (
     <p>
       Number of exercises{" "}
-      {props.parts.reduce(
+      {parts.reduce(
         (previousValue, currentValue) => previousValue + currentValue.exercises,
         0
       )}
