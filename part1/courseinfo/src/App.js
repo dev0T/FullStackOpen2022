@@ -26,6 +26,7 @@ const App = () => {
   );
 };
 
+// I know it wasn't asked for in 1.5 but I also updated the code to use destructuring introduced in 1c!
 const Header = ({ course }) => {
   return <h1>{course}</h1>;
 };
