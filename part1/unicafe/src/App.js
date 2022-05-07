@@ -8,7 +8,7 @@ const Button = ({ handleClick, text }) => {
   return <button onClick={handleClick}>{text}</button>;
 };
 
-const Result = ({ text, result }) => {
+const StatisticLine = ({ text, result }) => {
   return (
     <p>
       {text} {result}
@@ -23,18 +23,18 @@ const Statistics = ({ goodAmount, neutralAmount, badAmount }) => {
     return (
       <>
         <Header content={"Statistics"} />
-        <Result text={"Good"} result={goodAmount} />
-        <Result text={"Neutral"} result={neutralAmount} />
-        <Result text={"Bad"} result={badAmount} />
-        <Result
+        <StatisticLine text={"Good"} result={goodAmount} />
+        <StatisticLine text={"Neutral"} result={neutralAmount} />
+        <StatisticLine text={"Bad"} result={badAmount} />
+        <StatisticLine
           text={"All"}
           result={sum(goodAmount, neutralAmount, badAmount)}
         />
-        <Result
+        <StatisticLine
           text={"Average"}
           result={avg(weights, goodAmount, neutralAmount, badAmount)}
         />
-        <Result
+        <StatisticLine
           text={"Positive"}
           result={`${percentage(goodAmount, neutralAmount, badAmount)}%`}
         />
