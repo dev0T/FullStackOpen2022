@@ -18,23 +18,31 @@ const Result = ({ text, result }) => {
 
 const Statistics = ({ goodAmount, neutralAmount, badAmount }) => {
   const weights = [1, 0, -1];
-  return (
-    <>
-      <Header content={"Statistics"} />
-      <Result text={"Good"} result={goodAmount} />
-      <Result text={"Neutral"} result={neutralAmount} />
-      <Result text={"Bad"} result={badAmount} />
-      <Result text={"All"} result={sum(goodAmount, neutralAmount, badAmount)} />
-      <Result
-        text={"Average"}
-        result={avg(weights, goodAmount, neutralAmount, badAmount)}
-      />
-      <Result
-        text={"Positive"}
-        result={`${percentage(goodAmount, neutralAmount, badAmount)}%`}
-      />
-    </>
-  );
+
+  if (goodAmount || neutralAmount || badAmount) {
+    return (
+      <>
+        <Header content={"Statistics"} />
+        <Result text={"Good"} result={goodAmount} />
+        <Result text={"Neutral"} result={neutralAmount} />
+        <Result text={"Bad"} result={badAmount} />
+        <Result
+          text={"All"}
+          result={sum(goodAmount, neutralAmount, badAmount)}
+        />
+        <Result
+          text={"Average"}
+          result={avg(weights, goodAmount, neutralAmount, badAmount)}
+        />
+        <Result
+          text={"Positive"}
+          result={`${percentage(goodAmount, neutralAmount, badAmount)}%`}
+        />
+      </>
+    );
+  }
+
+  return <p>Give feedback to see Statistics!</p>;
 };
 
 // Currying
@@ -46,7 +54,6 @@ const sum = (...args) => {
     0
   );
 };
-
 
 const avg = (weights, ...args) => {
   const divisor = sum(...args);
