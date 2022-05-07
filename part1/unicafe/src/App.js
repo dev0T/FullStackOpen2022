@@ -10,9 +10,10 @@ const Button = ({ handleClick, text }) => {
 
 const StatisticLine = ({ text, result }) => {
   return (
-    <p>
-      {text} {result}
-    </p>
+    <tr>
+      <td>{text}</td>
+      <td>{result}</td>
+    </tr>
   );
 };
 
@@ -23,21 +24,25 @@ const Statistics = ({ goodAmount, neutralAmount, badAmount }) => {
     return (
       <>
         <Header content={"Statistics"} />
-        <StatisticLine text={"Good"} result={goodAmount} />
-        <StatisticLine text={"Neutral"} result={neutralAmount} />
-        <StatisticLine text={"Bad"} result={badAmount} />
-        <StatisticLine
-          text={"All"}
-          result={sum(goodAmount, neutralAmount, badAmount)}
-        />
-        <StatisticLine
-          text={"Average"}
-          result={avg(weights, goodAmount, neutralAmount, badAmount)}
-        />
-        <StatisticLine
-          text={"Positive"}
-          result={`${percentage(goodAmount, neutralAmount, badAmount)}%`}
-        />
+        <table>
+          <tbody>
+            <StatisticLine text={"Good"} result={goodAmount} />
+            <StatisticLine text={"Neutral"} result={neutralAmount} />
+            <StatisticLine text={"Bad"} result={badAmount} />
+            <StatisticLine
+              text={"All"}
+              result={sum(goodAmount, neutralAmount, badAmount)}
+            />
+            <StatisticLine
+              text={"Average"}
+              result={avg(weights, goodAmount, neutralAmount, badAmount)}
+            />
+            <StatisticLine
+              text={"Positive"}
+              result={`${percentage(goodAmount, neutralAmount, badAmount)}%`}
+            />
+          </tbody>
+        </table>
       </>
     );
   }
