@@ -9,11 +9,19 @@ const App = () => {
   const handleAdd = (event) => {
     event.preventDefault();
 
-    setPersons((persons) =>
-      persons.concat({ name: newName, id: persons.length + 1 })
-    );
+    if (findPerson(newName).length === 0) {
+      setPersons((persons) =>
+        persons.concat({ name: newName, id: persons.length + 1 })
+      );
+    } else {
+      alert(`${newName} is already added to phonebook`);
+    }
 
     setNewName("");
+  };
+
+  const findPerson = (name) => {
+    return persons.filter((person) => person.name === name);
   };
 
   return (
