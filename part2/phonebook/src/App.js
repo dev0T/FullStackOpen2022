@@ -1,4 +1,7 @@
 import { useState } from "react";
+import Filter from "./Filter";
+import PersonForm from "./PersonForm";
+import Persons from "./Persons";
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -7,34 +10,24 @@ const App = () => {
     { name: "Dan Abramov", number: "12-43-234345", id: 3 },
     { name: "Mary Poppendieck", number: "39-23-6423122", id: 4 },
   ]);
-  const [newName, setName] = useState("");
-  const [newNumber, setNumber] = useState("");
   const [searchName, setSearchName] = useState("");
   const [filteredPersons, setFilteredPersons] = useState(persons);
 
-  const handleInputChange = (set) => (event) => set(event.target.value);
-
-  const clearInput = () => {
-    setName("");
-    setNumber("");
-  };
-
-  const handleAdd = (event) => {
-    event.preventDefault();
-
+  const handleAdd = (newName, newNumber) => {
     if (findPerson(newName).length === 0) {
-      setPersons((persons) =>
-        persons.concat({
+      setPersons((persons) => {
+        const updatedPersons = persons.concat({
           name: newName,
           number: newNumber,
           id: persons.length + 1,
-        })
-      );
+        });
+        setFilteredPersons(updatedPersons);
+        return updatedPersons;
+      });
     } else {
-      alert(`${newName} is already added to phonebook`);
+      alert(`${newName} is already in the phonebook`);
     }
-
-    clearInput();
+    setSearchName("");
   };
 
   const handleSearch = (event) => {
@@ -60,31 +53,13 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
 
-      <div>
-        Filter shown with: <input value={searchName} onChange={handleSearch} />
-      </div>
+      <Filter name={searchName} handler={handleSearch} />
 
-      <h2>Add a New</h2>
-      <form onSubmit={handleAdd}>
-        <div>
-          name: <input value={newName} onChange={handleInputChange(setName)} />
-        </div>
-        <div>
-          number:{" "}
-          <input value={newNumber} onChange={handleInputChange(setNumber)} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
-      <h2>Numbers</h2>
-      {filteredPersons.map((person) => {
-        return (
-          <p key={person.id}>
-            {person.name} {person.number}
-          </p>
-        );
-      })}
+      <h3>Add a New</h3>
+
+      <PersonForm handleSubmit={handleAdd} />
+      <h3>Numbers</h3>
+      <Persons persons={filteredPersons} />
     </div>
   );
 };
