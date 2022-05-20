@@ -1,9 +1,11 @@
+import ListItem from "./ListItem";
+
 const FilterList = ({ countryList }) => {
   return (
     <>
       {countryList.map((country) => {
         return (
-          <p key={`${country.cca2}-${country.ccn3}`}>{country.name.common}</p>
+          <ListItem key={`${country.cca2}-${country.ccn3}`} country={country} />
         );
       })}
     </>
