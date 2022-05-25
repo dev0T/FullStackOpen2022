@@ -1,8 +1,14 @@
+import WeatherInfo from "./WeatherInfo";
+
 const CountryDetails = ({ country }) => {
-  const languages = Object.keys(country.languages);
-  const name = country.name.common;
-  const capital = country.capital;
-  const area = country.area;
+  const {
+    name: { common: name },
+    capital,
+    capitalInfo: { latlng },
+    languages,
+    area,
+  } = country;
+  const languagesKeys = Object.keys(languages);
 
   return (
     <>
@@ -11,11 +17,17 @@ const CountryDetails = ({ country }) => {
       <p>Area: {area}</p>
       <h4>Languages:</h4>
       <ul>
-        {languages.map((elementKey) => {
+        {languagesKeys.map((elementKey) => {
           return <li key={elementKey}>{country.languages[elementKey]}</li>;
         })}
       </ul>
-      <img src={country.flags.png} alt={`${name} flag`} width={200} />
+      <img
+        src={country.flags.png}
+        alt={`${name} flag`}
+        width={200}
+        style={{ border: "1px solid" }}
+      />
+      <WeatherInfo capital={capital} location={latlng} />
     </>
   );
 };
