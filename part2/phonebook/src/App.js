@@ -10,7 +10,8 @@ const App = () => {
   const [filteredPersons, setFilteredPersons] = useState([]);
 
   const handleAdd = (newName, newNumber) => {
-    if (findPersonByName(newName).length === 0) {
+    const person = findPersonByName(newName);
+    if (!person) {
       const personObject = {
         name: newName,
         number: newNumber,
@@ -25,7 +26,23 @@ const App = () => {
         });
       });
     } else {
-      alert(`${newName} is already in the phonebook`);
+      const confirmSub = window.confirm(
+        `${person.name} is already added to the phonebook. Would you like to replace the old number with the new one?`
+      );
+      if (confirmSub) {
+        const updatedPerson = { ...person, number: newNumber };
+        setPersons((persons) => {
+          const updatedPersons = persons.map((person) => {
+            if (person.id === updatedPerson.id) {
+              return updatedPerson;
+            }
+            return person;
+          });
+          setFilteredPersons(updatedPersons);
+          return updatedPersons;
+        });
+        personsService.update(person.id, updatedPerson);
+      }
     }
     setSearchName("");
   };
@@ -63,7 +80,7 @@ const App = () => {
   };
 
   const findPersonByName = (name) => {
-    return persons.filter((person) => person.name === name);
+    return persons.find((person) => person.name === name);
   };
 
   const filterOutById = (id) => {
