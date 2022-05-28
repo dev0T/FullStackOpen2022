@@ -10,11 +10,9 @@ const ListItem = ({ country }) => {
     });
   };
   return (
-    <div key={`${country.cca2}-${country.ccn3}`}>
+    <div>
       {country.name.common}
-      <button id={country.name.common} onClick={handleShow}>
-        {displayInfo ? "Hide" : "Show"}
-      </button>
+      <button onClick={handleShow}>{displayInfo ? "Hide" : "Show"}</button>
       {displayInfo && <CountryDetails country={country} />}
     </div>
   );

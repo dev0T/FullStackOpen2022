@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Filter from "./Filter";
 import PersonForm from "./PersonForm";
-import Persons from "./Persons";
+import Person from "./Person";
 import personsService from "./services/persons";
 
 const App = () => {
@@ -10,7 +10,7 @@ const App = () => {
   const [filteredPersons, setFilteredPersons] = useState([]);
 
   const handleAdd = (newName, newNumber) => {
-    if (findPerson(newName).length === 0) {
+    if (findPersonByName(newName).length === 0) {
       const personObject = {
         name: newName,
         number: newNumber,
@@ -30,6 +30,23 @@ const App = () => {
     setSearchName("");
   };
 
+  const handleDelete = (personId) => {
+    const person = findPersonById(personId);
+
+    console.log(person);
+
+    const confirm = window.confirm(`Do you want to delete ${person.name}?`);
+
+    if (confirm) {
+      const updatedPersons = filterOutById(personId);
+      setPersons(updatedPersons);
+      setFilteredPersons(updatedPersons);
+      personsService.deletePerson(personId).then((response) => {
+        return response;
+      });
+    }
+  };
+
   const handleSearch = (event) => {
     const name = event.target.value;
 
@@ -45,16 +62,27 @@ const App = () => {
     );
   };
 
-  const findPerson = (name) => {
+  const findPersonByName = (name) => {
     return persons.filter((person) => person.name === name);
   };
 
-  useEffect(() => {
+  const filterOutById = (id) => {
+    return persons.filter((person) => person.id !== id);
+  };
+
+  const findPersonById = (id) => {
+    return persons.find((person) => person.id === id);
+  };
+
+  const getAll = () => {
     personsService.getAll().then((response) => {
       setPersons(response);
       setFilteredPersons(response);
-      console.log(response);
     });
+  };
+
+  useEffect(() => {
+    getAll();
   }, []);
 
   console.log("render", persons.length, "notes");
@@ -69,7 +97,11 @@ const App = () => {
 
       <PersonForm handleSubmit={handleAdd} />
       <h3>Numbers</h3>
-      <Persons persons={filteredPersons} />
+      {filteredPersons.map((person) => {
+        return (
+          <Person key={person.id} person={person} handleDelete={handleDelete} />
+        );
+      })}
     </div>
   );
 };

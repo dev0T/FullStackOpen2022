@@ -28,4 +28,13 @@ const update = (id, newObject) => {
     .catch((error) => console.log(error));
 };
 
-export default { getAll, create, update };
+const deletePerson = (id) => {
+  const request = axios.delete(`${baseUrl}/${id}`);
+  return request
+    .then((response) => {
+      return response.status;
+    })
+    .catch((error) => console.log(error));
+};
+
+export default { getAll, create, update, deletePerson };
