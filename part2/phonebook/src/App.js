@@ -1,33 +1,105 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Filter from "./Filter";
 import PersonForm from "./PersonForm";
-import Persons from "./Persons";
+import Person from "./Person";
+import personsService from "./services/persons";
+import Notification from "./Notification";
+import "./index.css";
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: "Arto Hellas", number: "040-123456", id: 1 },
-    { name: "Ada Lovelace", number: "39-44-5323523", id: 2 },
-    { name: "Dan Abramov", number: "12-43-234345", id: 3 },
-    { name: "Mary Poppendieck", number: "39-23-6423122", id: 4 },
-  ]);
+  const [persons, setPersons] = useState([]);
   const [searchName, setSearchName] = useState("");
-  const [filteredPersons, setFilteredPersons] = useState(persons);
+  const [filteredPersons, setFilteredPersons] = useState([]);
+  const [message, setMessage] = useState({});
+
+  const showNotification = (message, type) => {
+    const messageObj = {
+      text: message,
+      type: type,
+    };
+    setMessage(messageObj);
+    setTimeout(() => {
+      setMessage(null);
+    }, 5000);
+  };
 
   const handleAdd = (newName, newNumber) => {
-    if (findPerson(newName).length === 0) {
-      setPersons((persons) => {
-        const updatedPersons = persons.concat({
-          name: newName,
-          number: newNumber,
-          id: persons.length + 1,
+    const person = findPersonByName(newName);
+    if (!person) {
+      const personObject = {
+        name: newName,
+        number: newNumber,
+        id: persons.length + 1,
+      };
+
+      personsService
+        .create(personObject)
+        .then((returnedPerson) => {
+          setPersons((persons) => {
+            const updatedPersons = persons.concat(returnedPerson);
+            setFilteredPersons(updatedPersons);
+            showNotification(`Added ${personObject.name}`, "success");
+            return updatedPersons;
+          });
+        })
+        .catch((error) => {
+          showNotification(
+            `There was an error adding ${personObject.name} to the server. Try again later.`,
+            "error"
+          );
         });
-        setFilteredPersons(updatedPersons);
-        return updatedPersons;
-      });
     } else {
-      alert(`${newName} is already in the phonebook`);
+      const confirmSub = window.confirm(
+        `${person.name} is already added to the phonebook. Would you like to replace the old number with the new one?`
+      );
+      if (confirmSub) {
+        const updatedPerson = { ...person, number: newNumber };
+        const personId = person.id;
+        personsService
+          .update(person.id, updatedPerson)
+          .then((returnedPerson) => {
+            setPersons((persons) => {
+              const updatedPersons = persons.map((person) =>
+                person.id !== personId ? person : returnedPerson
+              );
+              setFilteredPersons(updatedPersons);
+              showNotification(`Updated ${person.name}`, "success");
+              return updatedPersons;
+            });
+          })
+          .catch((error) => {
+            showNotification(
+              `Unable to update the number of ${person.name}. Try refreshing the page.`,
+              "error"
+            );
+          });
+      }
     }
     setSearchName("");
+  };
+
+  const handleDelete = (personId) => {
+    const person = findPersonById(personId);
+
+    const confirm = window.confirm(`Do you want to delete ${person.name}?`);
+
+    if (confirm) {
+      const updatedPersons = filterOutById(personId);
+      setPersons(updatedPersons);
+      setFilteredPersons(updatedPersons);
+      personsService
+        .deletePerson(personId)
+        .then((response) => {
+          showNotification(`Deleted ${person.name}`, "success");
+          return response;
+        })
+        .catch((error) => {
+          showNotification(
+            `Unable to delete the number of ${person.name}.`,
+            "error"
+          );
+        });
+    }
   };
 
   const handleSearch = (event) => {
@@ -45,13 +117,33 @@ const App = () => {
     );
   };
 
-  const findPerson = (name) => {
-    return persons.filter((person) => person.name === name);
+  const findPersonByName = (name) => {
+    return persons.find((person) => person.name === name);
   };
+
+  const filterOutById = (id) => {
+    return persons.filter((person) => person.id !== id);
+  };
+
+  const findPersonById = (id) => {
+    return persons.find((person) => person.id === id);
+  };
+
+  const getAll = () => {
+    personsService.getAll().then((response) => {
+      setPersons(response);
+      setFilteredPersons(response);
+    });
+  };
+
+  useEffect(() => {
+    getAll();
+  }, []);
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
 
       <Filter name={searchName} handler={handleSearch} />
 
@@ -59,7 +151,11 @@ const App = () => {
 
       <PersonForm handleSubmit={handleAdd} />
       <h3>Numbers</h3>
-      <Persons persons={filteredPersons} />
+      {filteredPersons.map((person) => {
+        return (
+          <Person key={person.id} person={person} handleDelete={handleDelete} />
+        );
+      })}
     </div>
   );
 };

@@ -15,13 +15,13 @@ Full Stack Open is a course that serves as an introduction to modern web applica
 - Component state, event handlers ✔
 - A more complex state, debugging React apps ✔
 
-### Part 2: Communicating with server
+### Part 2: Communicating with server ✅
 
 - Rendering a collection, modules ✔
-- Forms
-- Getting data from server
-- Altering data in server
-- Adding styles to React app
+- Forms ✔
+- Getting data from server ✔
+- Altering data in server ✔
+- Adding styles to React app ✔
 
 ### Part 3: Programming a server with NodeJS and Express
 
