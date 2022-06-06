@@ -12,6 +12,17 @@ const App = () => {
   const [filteredPersons, setFilteredPersons] = useState([]);
   const [message, setMessage] = useState({});
 
+  const showNotification = (message, type) => {
+    const messageObj = {
+      text: message,
+      type: type,
+    };
+    setMessage(messageObj);
+    setTimeout(() => {
+      setMessage(null);
+    }, 5000);
+  };
+
   const handleAdd = (newName, newNumber) => {
     const person = findPersonByName(newName);
     if (!person) {
@@ -27,26 +38,15 @@ const App = () => {
           setPersons((persons) => {
             const updatedPersons = persons.concat(returnedPerson);
             setFilteredPersons(updatedPersons);
-            const message = {
-              text: `Added ${personObject.name}`,
-              type: "success",
-            };
-            setMessage(message);
-            setTimeout(() => {
-              setMessage(null);
-            }, 5000);
+            showNotification(`Added ${personObject.name}`, "success");
             return updatedPersons;
           });
         })
         .catch((error) => {
-          setMessage({
-            text: `There was an error adding ${personObject.name} to the server. Try again later.`,
-            type: "error",
-          });
-          console.log(error);
-          setTimeout(() => {
-            setMessage(null);
-          }, 5000);
+          showNotification(
+            `There was an error adding ${personObject.name} to the server. Try again later.`,
+            "error"
+          );
         });
     } else {
       const confirmSub = window.confirm(
@@ -63,18 +63,15 @@ const App = () => {
                 person.id !== personId ? person : returnedPerson
               );
               setFilteredPersons(updatedPersons);
+              showNotification(`Updated ${person.name}`, "success");
               return updatedPersons;
             });
           })
           .catch((error) => {
-            setMessage({
-              text: `Unable to update the number of ${person.name}. Try refreshing the page.`,
-              type: "error",
-            });
-            console.log(error);
-            setTimeout(() => {
-              setMessage(null);
-            }, 5000);
+            showNotification(
+              `Unable to update the number of ${person.name}. Try refreshing the page.`,
+              "error"
+            );
           });
       }
     }
@@ -83,8 +80,6 @@ const App = () => {
 
   const handleDelete = (personId) => {
     const person = findPersonById(personId);
-
-    console.log(person);
 
     const confirm = window.confirm(`Do you want to delete ${person.name}?`);
 
@@ -95,24 +90,14 @@ const App = () => {
       personsService
         .deletePerson(personId)
         .then((response) => {
-          setMessage({
-            text: `Deleted ${person.name}`,
-            type: "success",
-          });
-          setTimeout(() => {
-            setMessage(null);
-          }, 5000);
+          showNotification(`Deleted ${person.name}`, "success");
           return response;
         })
         .catch((error) => {
-          setMessage({
-            text: `Unable to delete the number of ${person.name}.`,
-            type: "error",
-          });
-          console.log(error);
-          setTimeout(() => {
-            setMessage(null);
-          }, 5000);
+          showNotification(
+            `Unable to delete the number of ${person.name}.`,
+            "error"
+          );
         });
     }
   };
@@ -154,8 +139,6 @@ const App = () => {
   useEffect(() => {
     getAll();
   }, []);
-
-  console.log("render", persons.length, "notes");
 
   return (
     <div>
